@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -16,8 +18,10 @@ import {
   Twitter,
   Users,
   Wrench,
+  X,
   Youtube
 } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ProjectData } from "@/types/project";
 
@@ -115,7 +119,15 @@ const socialLinks = [
   { icon: Youtube, label: "YouTube" }
 ] as const;
 
+const navItems = [
+  { href: "#about", label: "About" },
+  { href: "#services", label: "Services" },
+  { href: "#areas", label: "Areas" },
+  { href: "#contact", label: "Contact" }
+] as const;
+
 export default function WebsiteRenderer({ project }: Readonly<WebsiteRendererProps>) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const companyName = project.shop_name?.trim() || "HS Techware";
   const brandSubLabel = "Limited";
   const city = getCity(project.address);
@@ -177,28 +189,44 @@ export default function WebsiteRenderer({ project }: Readonly<WebsiteRendererPro
               <BrandMark companyName={companyName} subLabel={brandSubLabel} tone="light" />
 
               <nav className="hidden items-center gap-2 text-sm font-medium text-[#3c465f] sm:flex">
-                <a href="#about" className="rounded-full px-4 py-2 transition hover:bg-[#edf2ff]">
-                  About
-                </a>
-                <a href="#services" className="rounded-full px-4 py-2 transition hover:bg-[#edf2ff]">
-                  Services
-                </a>
-                <a href="#areas" className="rounded-full px-4 py-2 transition hover:bg-[#edf2ff]">
-                  Areas
-                </a>
-                <a href="#contact" className="rounded-full px-4 py-2 transition hover:bg-[#edf2ff]">
-                  Contact
-                </a>
+                {navItems.map((item) => (
+                  <a key={item.href} href={item.href} className="rounded-full px-4 py-2 transition hover:bg-[#edf2ff]">
+                    {item.label}
+                  </a>
+                ))}
               </nav>
 
               <button
                 type="button"
                 className="inline-flex h-11 w-11 items-center justify-center rounded-full text-[#20263a] sm:hidden"
-                aria-label="Open menu"
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-nav"
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                onClick={() => setIsMobileMenuOpen((open) => !open)}
               >
-                <Menu className="h-5 w-5" />
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
+
+            {isMobileMenuOpen ? (
+              <nav
+                id="mobile-nav"
+                className="border-t border-black/10 px-5 py-3 text-sm font-semibold text-[#24304c] sm:hidden"
+              >
+                <div className="flex flex-col gap-1">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      className="rounded-2xl px-4 py-3 transition hover:bg-[#edf2ff]"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </nav>
+            ) : null}
           </header>
 
           <div
